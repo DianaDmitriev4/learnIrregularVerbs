@@ -50,6 +50,15 @@ final class TrainViewController: UIViewController {
         return label
     }()
     
+    private lazy var countCorrectAnswerLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Count: " + String(countCorrectAnswer)
+        label.textColor = .black
+        label.font = .systemFont(ofSize: 20)
+        
+        return label
+    }()
+    
     private lazy var pastSimpleTextField: UITextField = {
         let field = UITextField()
         
@@ -89,7 +98,7 @@ final class TrainViewController: UIViewController {
         guard dataSource.count > count else { return nil }
         return dataSource[count]
     }
-    
+    private var countCorrectAnswer = 0
     private var count = 0 {
         didSet {
             infinitiveLabel.text = currentVerb?.infinitive
@@ -98,8 +107,6 @@ final class TrainViewController: UIViewController {
             checkButton.backgroundColor = .systemGray5
         }
     }
-    
-    private var countCorrectAnswer = 0
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -131,6 +138,11 @@ final class TrainViewController: UIViewController {
                 navigationController?.popViewController(animated: true)
             } else {
                 checkButton.backgroundColor = .green
+                // TODO: - Don't change text in countCorrectAnswerLabel
+                let isSecondAttempt = checkButton.backgroundColor == .red
+                countCorrectAnswer += isSecondAttempt ? 0 : 1
+                print(countCorrectAnswer)
+                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.count += 1
                 }
@@ -142,8 +154,9 @@ final class TrainViewController: UIViewController {
     }
     
     private func checkAnswers() -> Bool {
-        pastSimpleTextField.text?.lowercased() == currentVerb?.pastSimple.lowercased() &&
-        participleTextField.text?.lowercased() == currentVerb?.participle.lowercased()
+       pastSimpleTextField.text?.lowercased() == currentVerb?.pastSimple.lowercased() &&
+            participleTextField.text?.lowercased() == currentVerb?.participle.lowercased()
+        
     }
     
     private func setupUI() {
@@ -157,7 +170,9 @@ final class TrainViewController: UIViewController {
             pastSimpleTextField,
             participleLabel,
             participleTextField,
-            checkButton])
+            checkButton,
+            countCorrectAnswerLabel
+        ])
         
         setupConstraints()
     }
@@ -172,7 +187,7 @@ final class TrainViewController: UIViewController {
         }
         
         infinitiveLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(200)
+            make.top.equalToSuperview().inset(150)
             make.trailing.leading.equalToSuperview().inset(edgeInsets)
         }
         
@@ -199,6 +214,11 @@ final class TrainViewController: UIViewController {
         checkButton.snp.makeConstraints { make in
             make.top.equalTo(participleTextField.snp.bottom).offset(100)
             make.trailing.leading.equalToSuperview().inset(edgeInsets)
+        }
+        
+        countCorrectAnswerLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(50)
+            make.right.equalToSuperview().inset(edgeInsets)
         }
     }
 }
