@@ -53,11 +53,13 @@ final class HomeViewController: UIViewController {
     // MARK: - Properties
     private let cornerRadius: CGFloat = 20
     private let buttonHeight: CGFloat = 80
+    private var dataSource = IrregularVerbs.shared
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        dataSource.selectedVerbs = dataSource.verbs
         configureUI()
     }
     
