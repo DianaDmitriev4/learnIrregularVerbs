@@ -14,5 +14,8 @@
 "come" = "приходить";
 "do" = "делать";
 "drink" = "пить";
-"All verbs are complete. Your score:" = "Все глаголы сделаны. Ваш счет:";
+"All verbs are complete. \n Your score: \(countCorrectAnswer)" = "Все глаголы сделаны. Ваш счет:";
 "The end" = "Конец";
+"Count: 0" = "Счёт: 0";
+"Count: " = "Счёт: ";
+"Skip" = "Пропустить";

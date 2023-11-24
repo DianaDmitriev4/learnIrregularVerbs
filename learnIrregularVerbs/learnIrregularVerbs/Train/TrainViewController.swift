@@ -84,7 +84,7 @@ final class TrainViewController: UIViewController {
     
     private lazy var countCorrectAnswerLabel: UILabel = {
         let label = UILabel()
-        label.text = "Count: 0"
+        label.text = "Count: 0".localized
         label.textColor = .black
         label.font = .systemFont(ofSize: 20)
         
@@ -100,6 +100,20 @@ final class TrainViewController: UIViewController {
         return label
     }()
     
+    private lazy var skipButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 10
+        button.backgroundColor = .systemGray5
+        button.setTitle("Skip".localized, for: .normal)
+        button.setTitleColor(.gray, for: .normal)
+        button.addTarget(self,
+                         action: #selector(skipAnswer),
+                         for: .touchUpInside)
+        
+        
+        return button
+    }()
+    
     // MARK: - Properties
     private let edgeInsets = 30
     private let dataSource = IrregularVerbs.shared.selectedVerbs
@@ -109,7 +123,7 @@ final class TrainViewController: UIViewController {
     }
     private var countCorrectAnswer = 0 {
         didSet {
-            countCorrectAnswerLabel.text = "Count: " + String(countCorrectAnswer)
+            countCorrectAnswerLabel.text = "Count: ".localized + String(countCorrectAnswer)
         }
     }
     private var count = 0 {
@@ -146,6 +160,17 @@ final class TrainViewController: UIViewController {
     }
     
     // MARK: - Private methods
+    @objc private func skipAnswer() {
+        pastSimpleTextField.text = currentVerb?.pastSimple
+        participleTextField.text = currentVerb?.participle
+        checkButton.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.count += 1
+            self?.checkButton.isEnabled = true
+            self?.checkButton.setTitle("Check".localized, for: .normal)
+        }
+    }
+    
     @objc private func checkAction() {
         if checkAnswers() {
             let isSecondAttempt = checkButton.backgroundColor == .red
@@ -173,7 +198,8 @@ final class TrainViewController: UIViewController {
     
     private func makeAlert() {
         let alert = UIAlertController(title: "The end".localized,
-                                      message: "All verbs are complete. \n Your score: \(countCorrectAnswer) ".localized,
+                                      message: 
+                                        "All verbs are complete. \n Your score: \(countCorrectAnswer)".localized,
                                       preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .cancel) { _ in
             self.navigationController?.popViewController(animated: true) }
@@ -194,7 +220,8 @@ final class TrainViewController: UIViewController {
             participleTextField,
             checkButton,
             countCorrectAnswerLabel,
-            countCurrentVerbLabel
+            countCurrentVerbLabel,
+            skipButton
         ])
         
         setupConstraints()
@@ -247,6 +274,11 @@ final class TrainViewController: UIViewController {
         countCurrentVerbLabel.snp.makeConstraints { make in
             make.top.equalTo(countCorrectAnswerLabel).offset(30)
             make.right.equalToSuperview().inset(edgeInsets)
+        }
+        
+        skipButton.snp.makeConstraints { make in
+            make.top.equalTo(checkButton).offset(70)
+            make.trailing.leading.equalToSuperview().inset(edgeInsets)
         }
     }
 }
