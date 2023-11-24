@@ -148,14 +148,13 @@ final class TrainViewController: UIViewController {
     // MARK: - Private methods
     @objc private func checkAction() {
         if checkAnswers() {
+            let isSecondAttempt = checkButton.backgroundColor == .red
             if currentVerb?.infinitive == dataSource.last?.infinitive {
-                navigationController?.popViewController(animated: true)
+                countCorrectAnswer += isSecondAttempt ? 0 : 1
+                makeAlert()
             } else {
                 checkButton.backgroundColor = .green
-                
-                let isSecondAttempt = checkButton.backgroundColor == .red
                 countCorrectAnswer += isSecondAttempt ? 0 : 1
-    
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.count += 1
                 }
@@ -167,9 +166,19 @@ final class TrainViewController: UIViewController {
     }
     
     private func checkAnswers() -> Bool {
-       pastSimpleTextField.text?.lowercased() == currentVerb?.pastSimple.lowercased() &&
-            participleTextField.text?.lowercased() == currentVerb?.participle.lowercased()
+        pastSimpleTextField.text?.lowercased() == currentVerb?.pastSimple.lowercased() &&
+        participleTextField.text?.lowercased() == currentVerb?.participle.lowercased()
         
+    }
+    
+    private func makeAlert() {
+        let alert = UIAlertController(title: "The end".localized,
+                                      message: "All verbs are complete. \n Your score: \(countCorrectAnswer) ".localized,
+                                      preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .cancel) { _ in
+            self.navigationController?.popViewController(animated: true) }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
     }
     
     private func setupUI() {
