@@ -50,15 +50,6 @@ final class TrainViewController: UIViewController {
         return label
     }()
     
-    private lazy var countCorrectAnswerLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Count: " + String(countCorrectAnswer)
-        label.textColor = .black
-        label.font = .systemFont(ofSize: 20)
-        
-        return label
-    }()
-    
     private lazy var pastSimpleTextField: UITextField = {
         let field = UITextField()
         
@@ -91,6 +82,24 @@ final class TrainViewController: UIViewController {
         return button
     }()
     
+    private lazy var countCorrectAnswerLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Count: " + String(countCorrectAnswer)
+        label.textColor = .black
+        label.font = .systemFont(ofSize: 20)
+        
+        return label
+    }()
+    
+    private lazy var countCurrentVerbLabel: UILabel = {
+        let label = UILabel()
+        label.text = "\(count)/\(dataSource.count)"
+        label.textColor = .gray
+        label.font = .systemFont(ofSize: 14)
+        
+        return label
+    }()
+    
     // MARK: - Properties
     private let edgeInsets = 30
     private let dataSource = IrregularVerbs.shared.selectedVerbs
@@ -102,6 +111,7 @@ final class TrainViewController: UIViewController {
     private var count = 0 {
         didSet {
             infinitiveLabel.text = currentVerb?.infinitive
+            countCurrentVerbLabel.text = "\(count)/\(dataSource.count)"
             pastSimpleTextField.text = ""
             participleTextField.text = ""
             checkButton.backgroundColor = .systemGray5
@@ -171,7 +181,8 @@ final class TrainViewController: UIViewController {
             participleLabel,
             participleTextField,
             checkButton,
-            countCorrectAnswerLabel
+            countCorrectAnswerLabel,
+            countCurrentVerbLabel
         ])
         
         setupConstraints()
@@ -218,6 +229,11 @@ final class TrainViewController: UIViewController {
         
         countCorrectAnswerLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(50)
+            make.right.equalToSuperview().inset(edgeInsets)
+        }
+        
+        countCurrentVerbLabel.snp.makeConstraints { make in
+            make.top.equalTo(countCorrectAnswerLabel).offset(30)
             make.right.equalToSuperview().inset(edgeInsets)
         }
     }
