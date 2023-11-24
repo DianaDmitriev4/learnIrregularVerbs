@@ -75,7 +75,7 @@ final class TrainViewController: UIViewController {
         button.backgroundColor = .systemGray5
         button.setTitle("Check".localized, for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.addTarget(self, 
+        button.addTarget(self,
                          action: #selector(checkAction),
                          for: .touchUpInside)
         
@@ -85,14 +85,21 @@ final class TrainViewController: UIViewController {
     // MARK: - Properties
     private let edgeInsets = 30
     private let dataSource = IrregularVerbs.shared.selectedVerbs
-    private var currentVerb: Verb?
+    private var currentVerb: Verb? {
+        guard dataSource.count > count else { return nil }
+        return dataSource[count]
+    }
+    
     private var count = 0 {
         didSet {
             infinitiveLabel.text = currentVerb?.infinitive
             pastSimpleTextField.text = ""
             participleTextField.text = ""
+            checkButton.backgroundColor = .systemGray5
         }
     }
+    
+    private var countCorrectAnswer = 0
     
     // MARK: - Life Cycle
     override func viewDidLoad() {
@@ -123,19 +130,22 @@ final class TrainViewController: UIViewController {
             if currentVerb?.infinitive == dataSource.last?.infinitive {
                 navigationController?.popViewController(animated: true)
             } else {
-                count += 1
+                checkButton.backgroundColor = .green
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.count += 1
+                }
             }
         } else {
             checkButton.backgroundColor = .red
             checkButton.setTitle("Try again".localized, for: .normal)
         }
     }
-
+    
     private func checkAnswers() -> Bool {
         pastSimpleTextField.text?.lowercased() == currentVerb?.pastSimple.lowercased() &&
         participleTextField.text?.lowercased() == currentVerb?.participle.lowercased()
     }
-
+    
     private func setupUI() {
         view.backgroundColor = .white
         
