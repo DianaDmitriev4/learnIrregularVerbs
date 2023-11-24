@@ -84,7 +84,7 @@ final class TrainViewController: UIViewController {
     
     private lazy var countCorrectAnswerLabel: UILabel = {
         let label = UILabel()
-        label.text = "Count: " + String(countCorrectAnswer)
+        label.text = "Count: 0"
         label.textColor = .black
         label.font = .systemFont(ofSize: 20)
         
@@ -107,7 +107,11 @@ final class TrainViewController: UIViewController {
         guard dataSource.count > count else { return nil }
         return dataSource[count]
     }
-    private var countCorrectAnswer = 0
+    private var countCorrectAnswer = 0 {
+        didSet {
+            countCorrectAnswerLabel.text = "Count: " + String(countCorrectAnswer)
+        }
+    }
     private var count = 0 {
         didSet {
             infinitiveLabel.text = currentVerb?.infinitive
@@ -148,11 +152,10 @@ final class TrainViewController: UIViewController {
                 navigationController?.popViewController(animated: true)
             } else {
                 checkButton.backgroundColor = .green
-                // TODO: - Don't change text in countCorrectAnswerLabel
+                
                 let isSecondAttempt = checkButton.backgroundColor == .red
                 countCorrectAnswer += isSecondAttempt ? 0 : 1
-                print(countCorrectAnswer)
-                
+    
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.count += 1
                 }
