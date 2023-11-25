@@ -169,12 +169,14 @@ final class TrainViewController: UIViewController {
         pastSimpleTextField.text = currentVerb?.pastSimple
         participleTextField.text = currentVerb?.participle
         checkButton.isEnabled = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.count += 1
-            self?.checkButton.isEnabled = true
-            self?.checkButton.setTitle("Check".localized, for: .normal)
-            if self?.currentVerb?.infinitive == self?.dataSource.last?.infinitive {
-                self?.makeAlert()
+        if currentVerb?.infinitive == dataSource.last?.infinitive {
+            makeAlert()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                self?.count += 1
+                self?.checkButton.isEnabled = true
+                self?.checkButton.setTitle("Check".localized, for: .normal)
+                
             }
         }
     }
