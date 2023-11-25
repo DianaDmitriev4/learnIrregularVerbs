@@ -173,6 +173,9 @@ final class TrainViewController: UIViewController {
             self?.count += 1
             self?.checkButton.isEnabled = true
             self?.checkButton.setTitle("Check".localized, for: .normal)
+            if self?.currentVerb?.infinitive == self?.dataSource.last?.infinitive {
+                self?.makeAlert()
+            }
         }
     }
     
