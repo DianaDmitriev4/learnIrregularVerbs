@@ -93,7 +93,7 @@ final class TrainViewController: UIViewController {
     
     private lazy var countCurrentVerbLabel: UILabel = {
         let label = UILabel()
-        label.text = "\(count)/\(dataSource.count)"
+        label.text = "\(countCurrentVerb)/\(dataSource.count)"
         label.textColor = .gray
         label.font = .systemFont(ofSize: 14)
         
@@ -126,13 +126,18 @@ final class TrainViewController: UIViewController {
             countCorrectAnswerLabel.text = "Count: ".localized + String(countCorrectAnswer)
         }
     }
+    private var countCurrentVerb = 1 {
+        didSet {
+            countCurrentVerbLabel.text = "\(countCurrentVerb)/\(dataSource.count)"
+        }
+    }
     private var count = 0 {
         didSet {
             infinitiveLabel.text = currentVerb?.infinitive
-            countCurrentVerbLabel.text = "\(count)/\(dataSource.count)"
             pastSimpleTextField.text = ""
             participleTextField.text = ""
             checkButton.backgroundColor = .systemGray5
+            countCurrentVerb += 1
         }
     }
     
