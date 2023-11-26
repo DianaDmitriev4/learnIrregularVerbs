@@ -209,9 +209,10 @@ final class TrainViewController: UIViewController {
     }
     
     private func makeAlert() {
+        let stringForAlert = "Message_for_allert:".localized + "%d"
+        let message = String(format: stringForAlert, countCorrectAnswer)
         let alert = UIAlertController(title: "The end".localized,
-                                      message:
-                                        "All verbs are complete. \n Your score: \(countCorrectAnswer)".localized,
+                                      message: message,
                                       preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .cancel) { _ in
             self.navigationController?.popViewController(animated: true) }
