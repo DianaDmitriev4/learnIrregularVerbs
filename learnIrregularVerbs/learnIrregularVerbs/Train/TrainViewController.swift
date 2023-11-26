@@ -138,6 +138,7 @@ final class TrainViewController: UIViewController {
             participleTextField.text = ""
             checkButton.backgroundColor = .systemGray5
             countCurrentVerb += 1
+            checkButton.setTitle("Check".localized, for: .normal)
         }
     }
     
@@ -189,6 +190,7 @@ final class TrainViewController: UIViewController {
                 makeAlert()
             } else {
                 checkButton.backgroundColor = .green
+                checkButton.setTitle("Ok".localized, for: .normal)
                 countCorrectAnswer += isSecondAttempt ? 0 : 1
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.count += 1
@@ -208,7 +210,7 @@ final class TrainViewController: UIViewController {
     
     private func makeAlert() {
         let alert = UIAlertController(title: "The end".localized,
-                                      message: 
+                                      message:
                                         "All verbs are complete. \n Your score: \(countCorrectAnswer)".localized,
                                       preferredStyle: .alert)
         let action = UIAlertAction(title: "OK", style: .cancel) { _ in
