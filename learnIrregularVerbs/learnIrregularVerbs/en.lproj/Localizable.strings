@@ -8,3 +8,16 @@
 "Select Verbs" = "Select Verbs";
 "Train Verbs" = "Train Verbs";
 "Check" = "Check";
+"blow" = "blow";
+"draw" = "draw";
+"break" = "break";
+"come" = "come";
+"do" = "do";
+"drink" = "drink";
+"All verbs are complete" = "All verbs are complete";
+"The end" = "The end";
+"All verbs are complete. Your score:";
+"Count: " = "Count: ";
+"Count: 0" = "Count: 0";
+"Skip" = "Skip";
+"Message_for_allert:" = "All verbs are complete. \n Your score:";

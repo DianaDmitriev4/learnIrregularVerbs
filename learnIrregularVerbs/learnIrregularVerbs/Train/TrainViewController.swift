@@ -75,9 +75,41 @@ final class TrainViewController: UIViewController {
         button.backgroundColor = .systemGray5
         button.setTitle("Check".localized, for: .normal)
         button.setTitleColor(.black, for: .normal)
-        button.addTarget(self, 
+        button.addTarget(self,
                          action: #selector(checkAction),
                          for: .touchUpInside)
+        
+        return button
+    }()
+    
+    private lazy var countCorrectAnswerLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Count: 0".localized
+        label.textColor = .black
+        label.font = .systemFont(ofSize: 20)
+        
+        return label
+    }()
+    
+    private lazy var countCurrentVerbLabel: UILabel = {
+        let label = UILabel()
+        label.text = "\(countCurrentVerb)/\(dataSource.count)"
+        label.textColor = .gray
+        label.font = .systemFont(ofSize: 14)
+        
+        return label
+    }()
+    
+    private lazy var skipButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 10
+        button.backgroundColor = .systemGray5
+        button.setTitle("Skip".localized, for: .normal)
+        button.setTitleColor(.gray, for: .normal)
+        button.addTarget(self,
+                         action: #selector(skipAnswer),
+                         for: .touchUpInside)
+        
         
         return button
     }()
@@ -85,12 +117,28 @@ final class TrainViewController: UIViewController {
     // MARK: - Properties
     private let edgeInsets = 30
     private let dataSource = IrregularVerbs.shared.selectedVerbs
-    private var currentVerb: Verb?
+    private var currentVerb: Verb? {
+        guard dataSource.count > count else { return nil }
+        return dataSource[count]
+    }
+    private var countCorrectAnswer = 0 {
+        didSet {
+            countCorrectAnswerLabel.text = "Count: ".localized + String(countCorrectAnswer)
+        }
+    }
+    private var countCurrentVerb = 1 {
+        didSet {
+            countCurrentVerbLabel.text = "\(countCurrentVerb)/\(dataSource.count)"
+        }
+    }
     private var count = 0 {
         didSet {
             infinitiveLabel.text = currentVerb?.infinitive
             pastSimpleTextField.text = ""
             participleTextField.text = ""
+            checkButton.backgroundColor = .systemGray5
+            countCurrentVerb += 1
+            checkButton.setTitle("Check".localized, for: .normal)
         }
     }
     
@@ -118,24 +166,60 @@ final class TrainViewController: UIViewController {
     }
     
     // MARK: - Private methods
+    @objc private func skipAnswer() {
+        pastSimpleTextField.text = currentVerb?.pastSimple
+        participleTextField.text = currentVerb?.participle
+        checkButton.isEnabled = false
+        if currentVerb?.infinitive == dataSource.last?.infinitive {
+            makeAlert()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                self?.count += 1
+                self?.checkButton.isEnabled = true
+                self?.checkButton.setTitle("Check".localized, for: .normal)
+                
+            }
+        }
+    }
+    
     @objc private func checkAction() {
         if checkAnswers() {
+            let isSecondAttempt = checkButton.backgroundColor == .red
             if currentVerb?.infinitive == dataSource.last?.infinitive {
-                navigationController?.popViewController(animated: true)
+                countCorrectAnswer += isSecondAttempt ? 0 : 1
+                makeAlert()
             } else {
-                count += 1
+                checkButton.backgroundColor = .green
+                checkButton.setTitle("Ok".localized, for: .normal)
+                countCorrectAnswer += isSecondAttempt ? 0 : 1
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    self?.count += 1
+                }
             }
         } else {
             checkButton.backgroundColor = .red
             checkButton.setTitle("Try again".localized, for: .normal)
         }
     }
-
+    
     private func checkAnswers() -> Bool {
         pastSimpleTextField.text?.lowercased() == currentVerb?.pastSimple.lowercased() &&
         participleTextField.text?.lowercased() == currentVerb?.participle.lowercased()
+        
     }
-
+    
+    private func makeAlert() {
+        let stringForAlert = "Message_for_allert:".localized + "%d"
+        let message = String(format: stringForAlert, countCorrectAnswer)
+        let alert = UIAlertController(title: "The end".localized,
+                                      message: message,
+                                      preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .cancel) { _ in
+            self.navigationController?.popViewController(animated: true) }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
     private func setupUI() {
         view.backgroundColor = .white
         
@@ -147,7 +231,11 @@ final class TrainViewController: UIViewController {
             pastSimpleTextField,
             participleLabel,
             participleTextField,
-            checkButton])
+            checkButton,
+            countCorrectAnswerLabel,
+            countCurrentVerbLabel,
+            skipButton
+        ])
         
         setupConstraints()
     }
@@ -162,7 +250,7 @@ final class TrainViewController: UIViewController {
         }
         
         infinitiveLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(200)
+            make.top.equalToSuperview().inset(150)
             make.trailing.leading.equalToSuperview().inset(edgeInsets)
         }
         
@@ -188,6 +276,21 @@ final class TrainViewController: UIViewController {
         
         checkButton.snp.makeConstraints { make in
             make.top.equalTo(participleTextField.snp.bottom).offset(100)
+            make.trailing.leading.equalToSuperview().inset(edgeInsets)
+        }
+        
+        countCorrectAnswerLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(50)
+            make.right.equalToSuperview().inset(edgeInsets)
+        }
+        
+        countCurrentVerbLabel.snp.makeConstraints { make in
+            make.top.equalTo(countCorrectAnswerLabel).offset(30)
+            make.right.equalToSuperview().inset(edgeInsets)
+        }
+        
+        skipButton.snp.makeConstraints { make in
+            make.top.equalTo(checkButton).offset(70)
             make.trailing.leading.equalToSuperview().inset(edgeInsets)
         }
     }

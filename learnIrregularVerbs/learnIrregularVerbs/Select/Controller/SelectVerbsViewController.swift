@@ -50,7 +50,7 @@ extension SelectVerbsViewController {
 }
 
 // MARK: - UITableViewDelegate
-extension SelectVerbsViewController {
+extension SelectVerbsViewController { //метод срабатывает, когда пользователь жмет на ячейку
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let verb = dataSource.verbs[indexPath.row]
         if isSelected(verb: verb) {
